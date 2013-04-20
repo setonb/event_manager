@@ -70,9 +70,9 @@ contents.each do |row|
   hours << regdate.strftime("%l%P")
   days << regdate.strftime("%A")
 
-  # form_letter = erb_template.result(binding)
+  form_letter = erb_template.result(binding)
 
-  # save_thank_you_letters(id,form_letter)
+  save_thank_you_letters(id,form_letter)
 end
 puts best_hours(hours)
 puts best_days(days)
