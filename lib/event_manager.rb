@@ -23,6 +23,20 @@ def clean_homephone(homephone)
 	end				
 end
 
+def best_hours(hours)
+	sorted_hours = hours.select{|item| hours.count(item) > 1}.sort_by{|item| hours.count(item)}.uniq
+	first_place = sorted_hours.pop
+	second_place = sorted_hours.pop
+	"Best hours of the day: #{first_place} & #{second_place}"
+end
+
+def best_days(days)
+	sorted_days = days.select{|item| days.count(item) > 1}.sort_by{|item| days.count(item)}.uniq
+	first_place = sorted_days.pop
+	second_place = sorted_days.pop
+	"Best days of the week: #{first_place} & #{second_place}"
+end
+
 def legislators_for_zipcode(zipcode)
   Sunlight::Legislator.all_in_zipcode(zipcode)
 end
@@ -43,15 +57,22 @@ contents = CSV.open 'event_attendees.csv', headers: true, header_converters: :sy
 
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
+hours = []
+days = []
 
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   homephone = clean_homephone(row[:homephone])
+  regdate = DateTime.strptime(row[:regdate], '%m/%d/%y %k:%M')
   legislators = legislators_for_zipcode(zipcode)
+  hours << regdate.strftime("%l%P")
+  days << regdate.strftime("%A")
 
-  form_letter = erb_template.result(binding)
+  # form_letter = erb_template.result(binding)
 
-  save_thank_you_letters(id,form_letter)
+  # save_thank_you_letters(id,form_letter)
 end
+puts best_hours(hours)
+puts best_days(days)
