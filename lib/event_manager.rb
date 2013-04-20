@@ -8,6 +8,21 @@ def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5,"0")[0..4]
 end
 
+def clean_homephone(homephone)
+	homephone.gsub!(/[^0-9]/, '')
+	if homephone.nil?
+		"0000000000"
+	elsif homephone.size == 10
+		homephone
+	elsif homephone[0] == "1" && homephone.length == 11
+		homephone[1..10]
+	elsif homephone[0] != "1" && homephone.length == 11
+		"0000000000"
+	elsif homephone.length > 11 || homephone.length < 10
+		"0000000000"
+	end				
+end
+
 def legislators_for_zipcode(zipcode)
   Sunlight::Legislator.all_in_zipcode(zipcode)
 end
@@ -33,6 +48,7 @@ contents.each do |row|
   id = row[0]
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
+  homephone = clean_homephone(row[:homephone])
   legislators = legislators_for_zipcode(zipcode)
 
   form_letter = erb_template.result(binding)
